@@ -46,11 +46,15 @@ export function proxy (target: Object, sourceKey: string, key: string) {
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
 
+// 初始化props 初始化methods 监测数据 初始化computed 初始化watch
 export function initState (vm: Component) {
   vm._watchers = []
   const opts = vm.$options
+  // 有传入props,初始化props
   if (opts.props) initProps(vm, opts.props)
+  // 有传入methods,初始化methods
   if (opts.methods) initMethods(vm, opts.methods)
+  // 有传入data,初始化data
   if (opts.data) {
     initData(vm)
   } else {
@@ -112,6 +116,7 @@ function initProps (vm: Component, propsOptions: Object) {
 
 function initData (vm: Component) {
   let data = vm.$options.data
+  // 定义私有变量_data
   data = vm._data = typeof data === 'function'
     ? getData(data, vm)
     : data || {}
@@ -146,6 +151,7 @@ function initData (vm: Component) {
         vm
       )
     } else if (!isReserved(key)) {
+      //代理,将data挂载到vue实例vm上
       proxy(vm, `_data`, key)
     }
   }

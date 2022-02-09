@@ -12,7 +12,7 @@ if (!fs.existsSync('dist')) {
 let builds = require('./config').getAllBuilds()
 
 // filter builds via command line arg
-// 过滤不需要的东西
+// 拿到命令行参数对构建配置做过滤
 // npm 'script'对应的参数 --weex等
 if (process.argv[2]) {
   const filters = process.argv[2].split(',')
