@@ -13,8 +13,9 @@ const idToTemplate = cached(id => {
   const el = query(id)
   return el && el.innerHTML
 })
-
+//缓存mount方法
 const mount = Vue.prototype.$mount
+// 重新定义了一次
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
@@ -22,6 +23,7 @@ Vue.prototype.$mount = function (
   el = el && query(el)
 
   /* istanbul ignore if */
+  //判断dom元素是body或者时文档会报错,vue不可以直接挂在,会被覆盖整个文档
   if (el === document.body || el === document.documentElement) {
     process.env.NODE_ENV !== 'production' && warn(
       `Do not mount Vue to <html> or <body> - mount to normal elements instead.`
@@ -31,11 +33,12 @@ Vue.prototype.$mount = function (
 
   const options = this.$options
   // resolve template/el and convert to render function
+  // 判断是否有render函数
   if (!options.render) {
     let template = options.template
     if (template) {
       if (typeof template === 'string') {
-        if (template.charAt(0) === '#') {
+        if (template.charAt(0) === '#') { //new Vue({template: '#idxxx'})
           template = idToTemplate(template)
           /* istanbul ignore if */
           if (process.env.NODE_ENV !== 'production' && !template) {
@@ -45,7 +48,7 @@ Vue.prototype.$mount = function (
             )
           }
         }
-      } else if (template.nodeType) {
+      } else if (template.nodeType) {//如果是dom直接取内容
         template = template.innerHTML
       } else {
         if (process.env.NODE_ENV !== 'production') {
@@ -53,7 +56,7 @@ Vue.prototype.$mount = function (
         }
         return this
       }
-    } else if (el) {
+    } else if (el) {//取外部模板
       template = getOuterHTML(el)
     }
     if (template) {
@@ -79,7 +82,7 @@ Vue.prototype.$mount = function (
       }
     }
   }
-  return mount.call(this, el, hydrating)
+  return mount.call(this, el, hydrating) //高阶函数 函数劫持 用户调用$mount方法时,会先执行重写后的方法,增加compileToFunctions功能
 }
 
 /**
@@ -96,6 +99,8 @@ function getOuterHTML (el: Element): string {
   }
 }
 
-Vue.compile = compileToFunctions
+Vue.compile = compileToFunctions //将template转换成render函数
 
 export default Vue
+
+

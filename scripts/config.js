@@ -34,7 +34,14 @@ const resolve = p => {
     return path.resolve(__dirname, '../', p)
   }
 }
-
+/**
+ * format:
+ * cjs => commonjs node环境下使用
+ * es => es6 Module 在webpack环境下使用 vue-cli 生成的项目
+ * umd => amd + commonjs 直接使用
+ * development （有waring提示）production
+ */
+// web-full = web-compiler (template => ast) + web-runtime
 const builds = {
   // Runtime only (CommonJS). Used by bundlers e.g. Webpack & Browserify
   'web-runtime-cjs-dev': {

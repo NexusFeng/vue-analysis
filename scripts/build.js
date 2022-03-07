@@ -5,7 +5,7 @@ const rollup = require('rollup')
 const terser = require('terser')
 
 if (!fs.existsSync('dist')) {
-  fs.mkdirSync('dist')
+  fs.mkdirSync('dist') //不存在创建dist目录
 }
 
 // 拿到所有配置
@@ -29,7 +29,7 @@ if (process.argv[2]) {
 // 编译
 build(builds)
 
-function build (builds) {
+function build (builds) { //依次根据配置进行打包
   let built = 0
   const total = builds.length
   const next = () => {

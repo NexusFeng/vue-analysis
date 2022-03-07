@@ -63,7 +63,7 @@ export function initExtend (Vue: GlobalAPI) {
       Sub[type] = Super[type]
     })
     // enable recursive self-lookup
-    if (name) {
+    if (name) { // 可以在自己的模板中使用自己
       Sub.options.components[name] = Sub
     }
 

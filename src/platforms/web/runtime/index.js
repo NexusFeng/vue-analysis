@@ -1,5 +1,7 @@
 /* @flow */
 
+//统一入口， 带compiler的只是增加了一个编译的过程,不带则直接使用此文件
+
 import Vue from 'core/index'
 import config from 'core/config'
 import { extend, noop } from 'shared/util'
@@ -27,19 +29,19 @@ Vue.config.getTagNamespace = getTagNamespace
 Vue.config.isUnknownElement = isUnknownElement
 
 // install platform runtime directives & components
-extend(Vue.options.directives, platformDirectives)
-extend(Vue.options.components, platformComponents)
+extend(Vue.options.directives, platformDirectives) //增加两个指令 v-show v-model
+extend(Vue.options.components, platformComponents) // transition transition-group
 
 // install platform patch function
-Vue.prototype.__patch__ = inBrowser ? patch : noop
+Vue.prototype.__patch__ = inBrowser ? patch : noop //_patch_
 
 // public mount method
-Vue.prototype.$mount = function (
+Vue.prototype.$mount = function ( //公共的$mount
   el?: string | Element,
   hydrating?: boolean
 ): Component {
   el = el && inBrowser ? query(el) : undefined
-  return mountComponent(this, el, hydrating)
+  return mountComponent(this, el, hydrating) //组件挂载
 }
 
 // devtools global hook

@@ -34,11 +34,11 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   // exposed util methods.
   // NOTE: these are not considered part of the public API - avoid relying on
   // them unless you are aware of the risk.
-  Vue.util = {
+  Vue.util = { //vue内部的工具方法
     warn,
     extend,
-    mergeOptions,
-    defineReactive
+    mergeOptions, //合并属性
+    defineReactive // 定义响应式
   }
 
   Vue.set = set
@@ -46,11 +46,12 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   Vue.nextTick = nextTick
 
   // 2.6 explicit observable API
-  Vue.observable = <T>(obj: T): T => {
+  Vue.observable = <>(obj: T): T => {
     observe(obj)
     return obj
   }
-
+  // 用户定义的全局属性 方法 component directive filter
+  // Vue.mixin({data, hook}) 缺点：数据来源不清晰 优点: 能复用 (高阶组件,Vue.mixin)</>
   Vue.options = Object.create(null)
   ASSET_TYPES.forEach(type => {
     Vue.options[type + 's'] = Object.create(null)
@@ -60,10 +61,10 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   // components with in Weex's multi-instance scenarios.
   Vue.options._base = Vue
 
-  extend(Vue.options.components, builtInComponents)
+  extend(Vue.options.components, builtInComponents) //keep-alivwe
 
-  initUse(Vue)
-  initMixin(Vue)
-  initExtend(Vue)
-  initAssetRegisters(Vue)
+  initUse(Vue) //Vue.use
+  initMixin(Vue) //Vue.mixin
+  initExtend(Vue) //Vue.extend
+  initAssetRegisters(Vue) //Vue.component Vue.filter Vue.directive
 }

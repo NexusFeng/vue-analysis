@@ -7,6 +7,9 @@ export function initAssetRegisters (Vue: GlobalAPI) {
   /**
    * Create asset registration methods.
    */
+  // Vue.component Vue.options.components
+  // Vue.directive Vue.options.directives
+  // Vue.filter Vue.options.filters 进行对用户的属性收集操作,并没有做初始化
   ASSET_TYPES.forEach(type => {
     Vue[type] = function (
       id: string,

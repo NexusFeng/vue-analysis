@@ -16,7 +16,7 @@ export function initMixin (Vue: Class<Component>) {
   Vue.prototype._init = function (options?: Object) {
     const vm: Component = this
     // a uid
-    vm._uid = uid++
+    vm._uid = uid++ // _uid是唯一标识  可以作为key
 
     let startTag, endTag
     /* istanbul ignore if */
@@ -27,9 +27,9 @@ export function initMixin (Vue: Class<Component>) {
     }
 
     // a flag to avoid this being observed
-    vm._isVue = true
+    vm._isVue = true //vue的实例不能被观测
     // merge options
-    if (options && options._isComponent) {
+    if (options && options._isComponent) { // 如果是组件,需要对组件的属性 事件初始化
       // optimize internal component instantiation
       // since dynamic options merging is pretty slow, and none of the
       // internal component options needs special treatment.
