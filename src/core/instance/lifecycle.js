@@ -152,6 +152,9 @@ export function mountComponent (
       if ((vm.$options.template && vm.$options.template.charAt(0) !== '#') ||
         vm.$options.el || el) {
         warn(
+          //如果没写render，但是写了template，用的是运行时
+          //不要用template，可以使用工程化方式,通过vue-loader转化模板
+          //用带compiler版本的
           'You are using the runtime-only build of Vue where the template ' +
           'compiler is not available. Either pre-compile the templates into ' +
           'render functions, or use the compiler-included build.',
@@ -165,7 +168,7 @@ export function mountComponent (
       }
     }
   }
-  callHook(vm, 'beforeMount')
+  callHook(vm, 'beforeMount') //挂载
 
   let updateComponent
   /* istanbul ignore if */
@@ -197,19 +200,19 @@ export function mountComponent (
   // component's mounted hook), which relies on vm._watcher being already defined
   // 渲染watcher
   new Watcher(vm, updateComponent, noop, {
-    before () {
+    before () { //更新钩子
       if (vm._isMounted && !vm._isDestroyed) {
         callHook(vm, 'beforeUpdate')
       }
     }
   }, true /* isRenderWatcher */)
-  hydrating = false
+  hydrating = false //不是服务端渲染
 
   // manually mounted instance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
   if (vm.$vnode == null) {
-    vm._isMounted = true
-    callHook(vm, 'mounted')
+    vm._isMounted = true //已经渲染过了
+    callHook(vm, 'mounted')//当前组件挂载完毕
   }
   return vm
 }

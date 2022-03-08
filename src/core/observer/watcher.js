@@ -54,14 +54,14 @@ export default class Watcher {
     if (isRenderWatcher) {
       vm._watcher = this
     }
-    vm._watchers.push(this)
+    vm._watchers.push(this) //为了能强制更新
     // options
     if (options) {
       this.deep = !!options.deep
       this.user = !!options.user
       this.lazy = !!options.lazy
-      this.sync = !!options.sync
-      this.before = options.before
+      this.sync = !!options.sync 
+      this.before = options.before //在watcher执行之前做的事 比如update
     } else {
       this.deep = this.user = this.lazy = this.sync = false
     }
@@ -118,7 +118,7 @@ export default class Watcher {
         traverse(value)
       }
       popTarget()
-      this.cleanupDeps()
+      this.cleanupDeps() //不清理 可能上次的数据还要被再次收集 vm.a = [1,2,3] => vm.a = {}数组不需要在收集
     }
     return value
   }

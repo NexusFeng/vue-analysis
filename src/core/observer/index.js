@@ -41,16 +41,16 @@ export class Observer {
 
   constructor (value: any) {
     this.value = value
-    this.dep = new Dep()
+    this.dep = new Dep()  //给每个对象创建一个dep
     this.vmCount = 0
     def(value, '__ob__', this)
     if (Array.isArray(value)) {
       if (hasProto) {
-        protoAugment(value, arrayMethods)
+        protoAugment(value, arrayMethods) // __proto__
       } else {
-        copyAugment(value, arrayMethods, arrayKeys)
+        copyAugment(value, arrayMethods, arrayKeys) //循环每一项赋值
       }
-      this.observeArray(value)
+      this.observeArray(value) //观测数组每一项
     } else {
       this.walk(value)
     }
@@ -108,7 +108,7 @@ function copyAugment (target: Object, src: Object, keys: Array<string>) {
  * or the existing observer if the value already has one.
  */
 export function observe (value: any, asRootData: ?boolean): Observer | void {
-  if (!isObject(value) || value instanceof VNode) {
+  if (!isObject(value) || value instanceof VNode) { //如果是虚拟节点也不用观测
     return
   }
   let ob: Observer | void
@@ -118,7 +118,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
     shouldObserve &&
     !isServerRendering() &&
     (Array.isArray(value) || isPlainObject(value)) &&
-    Object.isExtensible(value) &&
+    Object.isExtensible(value) && //isExtensible表示可以被defineProperty
     !value._isVue
   ) {
     ob = new Observer(value)
@@ -142,7 +142,7 @@ export function defineReactive (
   const dep = new Dep()
 
   const property = Object.getOwnPropertyDescriptor(obj, key)
-  if (property && property.configurable === false) {
+  if (property && property.configurable === false) { // 可配置才能加defineProperty
     return
   }
 
@@ -187,7 +187,8 @@ export function defineReactive (
       } else {
         val = newVal
       }
-      childOb = !shallow && observe(newVal)
+      //vm.a = 1 => vm.a = [1,2,3]
+      childOb = !shallow && observe(newVal) //当赋值一个新值时 需要重新监控 并且更新childOb
       dep.notify()
     }
   })
