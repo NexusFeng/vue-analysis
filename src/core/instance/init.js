@@ -49,11 +49,11 @@ export function initMixin (Vue: Class<Component>) {
     }
     // expose real self
     vm._self = vm
-    initLifecycle(vm)
-    initEvents(vm)
-    initRender(vm)
+    initLifecycle(vm) //初始化组件的父子关系 $parent $children实现原理
+    initEvents(vm) 
+    initRender(vm)//初始化插槽 _c $attrs $listeners
     callHook(vm, 'beforeCreate')
-    initInjections(vm) // resolve injections before data/props
+    initInjections(vm) // resolve injections before data/props  inject/provide隔代传数据 不建议开发时使用 因为数据来源混乱
     // 初始化状态
     initState(vm)
     initProvide(vm) // resolve provide after data/props
@@ -67,7 +67,7 @@ export function initMixin (Vue: Class<Component>) {
     }
 
     if (vm.$options.el) {
-      vm.$mount(vm.$options.el)
+      vm.$mount(vm.$options.el) // 调的有可能是with-compiler包,也可能是runtime包
     }
   }
 }

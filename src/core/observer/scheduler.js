@@ -81,7 +81,15 @@ function flushSchedulerQueue () {
   //    user watchers are created before the render watcher)
   // 3. If a component is destroyed during a parent component's watcher run,
   //    its watchers can be skipped.
-  queue.sort((a, b) => a.id - b.id)
+  queue.sort((a, b) => a.id - b.id) // 需要进行排序操作  为了保证更新逻辑在用户的nextTick之前
+
+  // setTimeout(() => {
+  //   vm.$nextTik(() => {
+  //     console.log(vm.$el)
+  //   })
+  //   vm.a = 1
+  //   vm.b = 2
+  // }, 1000);
 
   // do not cache length because more watchers might be pushed
   // as we run existing watchers
@@ -92,7 +100,7 @@ function flushSchedulerQueue () {
     }
     id = watcher.id
     has[id] = null
-    watcher.run()
+    watcher.run() // run更新视图 调用回调等
     // in dev build, check and stop circular updates.
     if (process.env.NODE_ENV !== 'production' && has[id] != null) {
       circular[id] = (circular[id] || 0) + 1

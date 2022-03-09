@@ -29,7 +29,7 @@ export function initInjections (vm: Component) {
           )
         })
       } else {
-        defineReactive(vm, key, result[key])
+        defineReactive(vm, key, result[key]) // 将注入的数据 放在了当前的实例上
       }
     })
     toggleObserving(true)

@@ -48,15 +48,15 @@ export function proxy (target: Object, sourceKey: string, key: string) {
 
 // 初始化props 初始化methods 监测数据 初始化computed 初始化watch
 export function initState (vm: Component) {
-  vm._watchers = []
+  vm._watchers = [] //收集当前实例上的所有watcher $forceUpdate
   const opts = vm.$options
-  // 有传入props,初始化props
+  // 有传入props,初始化props 组件的属性
   if (opts.props) initProps(vm, opts.props)
-  // 有传入methods,初始化methods
+  // 有传入methods,初始化methods 将所有的方法定义在实例上 （方法内部的this都是实例）
   if (opts.methods) initMethods(vm, opts.methods)
   // 有传入data,初始化data
   if (opts.data) {
-    initData(vm)
+    initData(vm) //数据处理
   } else {
     observe(vm._data = {}, true /* asRootData */)
   }
@@ -74,7 +74,7 @@ function initProps (vm: Component, propsOptions: Object) {
   const keys = vm.$options._propKeys = []
   const isRoot = !vm.$parent
   // root instance props should be converted
-  if (!isRoot) {
+  if (!isRoot) { // 属性传递 从父props(数据) => 子 => 孙子 所以只有根节点的数据做响应式处理就行
     toggleObserving(false)
   }
   for (const key in propsOptions) {
@@ -108,7 +108,7 @@ function initProps (vm: Component, propsOptions: Object) {
     // during Vue.extend(). We only need to proxy props defined at
     // instantiation here.
     if (!(key in vm)) {
-      proxy(vm, `_props`, key)
+      proxy(vm, `_props`, key) // 把组件的属性定义在了当前实例的_props上
     }
   }
   toggleObserving(true)
