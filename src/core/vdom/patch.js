@@ -27,6 +27,7 @@ import {
   isRegExp,
   isPrimitive
 } from '../util/index'
+import { divide } from 'lodash'
 
 export const emptyNode = new VNode('', {}, [])
 
@@ -141,6 +142,12 @@ export function createPatchFunction (backend) {
     }
 
     vnode.isRootInsert = !nested // for transition enter check
+
+    //渲染先父后子
+    // <div>
+    //   <my></my>
+    // </div>
+    //如果是组件就创建组件
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
       return
     }
@@ -540,14 +547,14 @@ export function createPatchFunction (backend) {
     }
 
     let i
-    const data = vnode.data
+    const data = vnode.data //组件更新会调用组件的prepatch方法
     if (isDef(data) && isDef(i = data.hook) && isDef(i = i.prepatch)) {
       i(oldVnode, vnode)
     }
 
     const oldCh = oldVnode.children
     const ch = vnode.children
-    if (isDef(data) && isPatchable(vnode)) {
+    if (isDef(data) && isPatchable(vnode)) { //比较属性
       for (i = 0; i < cbs.update.length; ++i) cbs.update[i](oldVnode, vnode)
       if (isDef(i = data.hook) && isDef(i = i.update)) i(oldVnode, vnode)
     }
@@ -698,7 +705,7 @@ export function createPatchFunction (backend) {
   }
 
   return function patch (oldVnode, vnode, hydrating, removeOnly) {
-    if (isUndef(vnode)) {
+    if (isUndef(vnode)) {//卸载组件的逻辑
       if (isDef(oldVnode)) invokeDestroyHook(oldVnode)
       return
     }
@@ -706,23 +713,23 @@ export function createPatchFunction (backend) {
     let isInitialPatch = false
     const insertedVnodeQueue = []
 
-    if (isUndef(oldVnode)) {
+    if (isUndef(oldVnode)) {// $mount()组件初始化的时候 会执行此方法
       // empty mount (likely as component), create new root element
       isInitialPatch = true
       createElm(vnode, insertedVnodeQueue)
     } else {
       const isRealElement = isDef(oldVnode.nodeType)
       if (!isRealElement && sameVnode(oldVnode, vnode)) {
-        // patch existing root node
+        // patch existing root node diff流程
         patchVnode(oldVnode, vnode, insertedVnodeQueue, null, null, removeOnly)
-      } else {
+      } else { //组件的初始化渲染
         if (isRealElement) {
           // mounting to a real element
           // check if this is server-rendered content and if we can perform
           // a successful hydration.
           if (oldVnode.nodeType === 1 && oldVnode.hasAttribute(SSR_ATTR)) {
             oldVnode.removeAttribute(SSR_ATTR)
-            hydrating = true
+            hydrating = true //服务端渲染
           }
           if (isTrue(hydrating)) {
             if (hydrate(oldVnode, vnode, insertedVnodeQueue)) {
@@ -740,15 +747,16 @@ export function createPatchFunction (backend) {
           }
           // either not server-rendered, or hydration failed.
           // create an empty node and replace it
-          oldVnode = emptyNodeAt(oldVnode)
+          //需要diff 所以将第一次的真实节点转换成虚拟节点
+          oldVnode = emptyNodeAt(oldVnode) //<div id="app"></div>
         }
 
         // replacing existing element
-        const oldElm = oldVnode.elm
-        const parentElm = nodeOps.parentNode(oldElm)
+        const oldElm = oldVnode.elm //app
+        const parentElm = nodeOps.parentNode(oldElm) // body
 
         // create new node
-        createElm(
+        createElm( //创建新元素 内部包含组件逻辑
           vnode,
           insertedVnodeQueue,
           // extremely rare edge case: do not insert if old element is in a
@@ -759,6 +767,7 @@ export function createPatchFunction (backend) {
         )
 
         // update parent placeholder node element, recursively
+        //更新父的占位符节点
         if (isDef(vnode.parent)) {
           let ancestor = vnode.parent
           const patchable = isPatchable(vnode)

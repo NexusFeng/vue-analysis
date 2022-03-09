@@ -124,7 +124,8 @@ export function renderMixin (Vue: Class<Component>) {
       vnode = createEmptyVNode()
     }
     // set parent
-    vnode.parent = _parentVnode
+    // <hello>hello</hello> => <div>hello</div> <hello></hello>是占位符节点
+    vnode.parent = _parentVnode // vnode = _vnode(组件渲染的虚拟节点).parent = $vnode(占位符节点)
     return vnode
   }
 }
