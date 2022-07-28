@@ -59,7 +59,7 @@ export default class Watcher {
     if (options) {
       this.deep = !!options.deep
       this.user = !!options.user
-      this.lazy = !!options.lazy
+      this.lazy = !!options.lazy// 标识计算属性watcher
       this.sync = !!options.sync 
       this.before = options.before //在watcher执行之前做的事 比如update
     } else {
@@ -68,7 +68,7 @@ export default class Watcher {
     this.cb = cb
     this.id = ++uid // uid for batching
     this.active = true
-    this.dirty = this.lazy // for lazy watchers
+    this.dirty = this.lazy // 表示watcher是否需要重新计算,默认为true
     this.deps = []
     this.newDeps = []
     this.depIds = new Set()
@@ -91,6 +91,7 @@ export default class Watcher {
         )
       }
     }
+    // 非计算属性实例化会默认调用get方法进行取值,计算属性的实例化时候不会去调用get
     this.value = this.lazy
       ? undefined
       : this.get()
@@ -104,6 +105,7 @@ export default class Watcher {
     let value
     const vm = this.vm
     try {
+      // 计算属性在这里执行用户定义的get函数,访问计算属性依赖项 从而把自身计算watcher添加到依赖项dep里面收集起来
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {
@@ -164,11 +166,13 @@ export default class Watcher {
    */
   update () {
     /* istanbul ignore else */
+    // 计算属性的依赖值发生了变化,只需要把dirty设置为true,下次访问到了就重新计算
     if (this.lazy) {
       this.dirty = true
     } else if (this.sync) {
       this.run()
     } else {
+      // 异步队列机制
       queueWatcher(this)
     }
   }
@@ -214,9 +218,10 @@ export default class Watcher {
    * Depend on all deps collected by this watcher.
    */
   depend () {
+    // 计算属性的watcher储存了依赖项的dep
     let i = this.deps.length
     while (i--) {
-      this.deps[i].depend()
+      this.deps[i].depend()//调用依赖项的dep去收集watcher
     }
   }
 

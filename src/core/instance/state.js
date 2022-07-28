@@ -172,14 +172,15 @@ export function getData (data: Function, vm: Component): any {
   }
 }
 
-const computedWatcherOptions = { lazy: true }
+const computedWatcherOptions = { lazy: true }//惰性计算,只有真正在模板里读取它的值后才会计算
 
 function initComputed (vm: Component, computed: Object) {
   // $flow-disable-line
+  // 定义缓存watcher的值
   const watchers = vm._computedWatchers = Object.create(null)
   // computed properties are just getters during SSR
   const isSSR = isServerRendering()
-
+  
   for (const key in computed) {
     const userDef = computed[key]
     const getter = typeof userDef === 'function' ? userDef : userDef.get
@@ -192,6 +193,7 @@ function initComputed (vm: Component, computed: Object) {
 
     if (!isSSR) {
       // create internal watcher for the computed property.
+      // 将每个属性初始化watcher
       watchers[key] = new Watcher(
         vm,
         getter || noop,
@@ -203,6 +205,7 @@ function initComputed (vm: Component, computed: Object) {
     // component-defined computed properties are already defined on the
     // component prototype. We only need to define computed properties defined
     // at instantiation here.
+     // 判断key是否在vm上定义过
     if (!(key in vm)) {
       defineComputed(vm, key, userDef)
     } else if (process.env.NODE_ENV !== 'production') {
@@ -223,6 +226,7 @@ export function defineComputed (
   userDef: Object | Function
 ) {
   const shouldCache = !isServerRendering()
+  //当计算属性为方法时,定义get方法
   if (typeof userDef === 'function') {
     sharedPropertyDefinition.get = shouldCache
       ? createComputedGetter(key)
@@ -245,16 +249,21 @@ export function defineComputed (
       )
     }
   }
+  // 对计算属性的get和set劫持
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
 
+// 重写计算属性的get方法,判断是否需要重新计算
 function createComputedGetter (key) {
   return function computedGetter () {
+    // 获取计算属性watcher
     const watcher = this._computedWatchers && this._computedWatchers[key]
     if (watcher) {
+      // 如果是脏的,需要重新求值
       if (watcher.dirty) {
         watcher.evaluate()
       }
+      // 如果dep还存在target,这时候一般为渲染watcher,计算属性依赖的数据也需要收集
       if (Dep.target) {
         watcher.depend()
       }
